@@ -18,6 +18,7 @@ def num_check(question, num_type=float, exit_code=None):
     while True:
         response = input(question)
         if response == exit_code:
+
             return response
 
         try:
@@ -30,19 +31,6 @@ def num_check(question, num_type=float, exit_code=None):
 
         except ValueError:
             print(error)
-
-
-def circle(var_radius):
-    return f"Area: {3.14 * var_radius * var_radius}, Perimeter: {2 * 3.14 * var_radius}"
-
-
-def square_rectangle(var_length, width):
-    return f"Area: {var_length * width}, Perimeter: {2 * length + 2 * width}"
-
-
-def triangle(var_base, var_height):
-    return (f"Area: {0.5 * var_base * var_height}, "
-            f"Perimeter: {var_base + var_height + math.sqrt(var_base * var_base + var_height * var_height)}")
 
 
 # Main Routine
@@ -61,7 +49,7 @@ number_of_calculations = num_check("Enter the number of calculations: ", num_typ
 calculations_done = 0
 
 while number_of_calculations == "" or calculations_done < number_of_calculations:
-    select_shape = choice_checker('Enter shape("xxx" to quit): ', shape_selection_list,
+    select_shape = choice_checker('Enter shape: ', shape_selection_list,
                                   'Please select circle, square, rectangle or triangle')
 
     if select_shape == 'xxx':
@@ -71,17 +59,19 @@ while number_of_calculations == "" or calculations_done < number_of_calculations
 
     if select_shape == "circle":
         radius = num_check("Radius: ")
-        print(circle(radius))
-
-
+        area_circle = 3.14 * radius * radius
+        perimeter_circle = 2 * 3.14 * radius
     elif select_shape == "square" or select_shape == "rectangle":
         length = num_check("Length: ")
-        width = num_check("Width: ")
-        print(square_rectangle(length, width))
+        square_perimeter = length * 4
+        square_area = length * length
 
-    elif select_shape == "triangle":
+
+    elif select_shape == "Triangle":
         base = num_check("Base: ")
         height = num_check("Height: ")
-        print(triangle(base, height))
+        triangle_perimeter = base + height + math.sqrt(base * base + height * height)
+        triangle_area = 0.5 * base * height
 
     calculations_done += 1
+

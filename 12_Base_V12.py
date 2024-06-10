@@ -1,14 +1,16 @@
-import math, pandas
+import math
+import pandas
 
 
 # Function containing instructions
 def instructions():
-    print("Welcome to the Shape Area and Perimeter Calculator!\n "
+    print("Welcome to the Shape Area and Perimeter Calculator!\n"
+
           "This program allows you to calculate the area and perimeter (or circumference) of various shapes\n"
           "including circles, squares, rectangles, and triangles. Simply follow the prompts to input the necessary\n"
-          "dimensions for your chosen shape, and the program will provide the calculated results. \n"
+          "dimensions for your chosen shape, and the program will provide the calculated results. \n\n"
           "You can perform multiple calculations in one session, and a summary of all your calculations will be \n"
-          "displayed at the end. Type 'xxx' at any prompt to exit the program.\n")
+          "displayed at the end. Type 'xxx' at any enter shape question to exit the program.\n")
 
 
 # choice checker to obtain valid responses from the user
@@ -17,12 +19,12 @@ def choice_checker(question, valid_responses, error_message):
         response = input(question).lower()
 
         # Iterating the items in valid responses
-        for item in valid_responses:
+        for var_item in valid_responses:
 
             # checking if the user input is valid
-            if response == item or response == item[0]:
+            if response == var_item or response == var_item[0]:
                 # returning if it is
-                return item
+                return var_item
         # output error if input is invalid
         print(error_message)
 
@@ -52,48 +54,49 @@ def num_check(question, num_type=float, exit_code=None):
                 # output error if 0 or less
                 print(error)
 
-        # error if input is not a integer / float as specified by parameter
+        # error if input is not an integer / float as specified by parameter
         except ValueError:
             print(error)
 
 
 # function to calculate area / circumference of circle
 def circle(var_radius):
-    return (f"Area: {round(3.14 * var_radius * var_radius, 2)} SU, "
-            f"Circumference: {round(2 * 3.14 * var_radius, 2)} U")
+    area = round(3.14 * var_radius * var_radius, 2)
+    perimeter = round(2 * 3.14 * var_radius, 2)
+    return f"Area: {area} SU, Perimeter: {perimeter} U"
 
 
-# function to calulate area / perimeter of squares and rectangles
-def square_rectangle(var_length, width):
-    return (f"Area: {round(var_length * width, 2)} SU, "
-            f"Perimeter: {round(2 * length + 2 * width, 2)} U")
+# function to calculate area / perimeter of squares and rectangles
+def square_rectangle(var_length, var_width):
+    area = round(var_length * var_width, 2)
+    perimeter = round(2 * var_length + 2 * var_width, 2)
+    return f"Area: {area} SU, Perimeter: {perimeter} U"
 
 
 # calculated area / perimeter using herons law or base and height
 def triangle(var_base=None, var_height=None, var_first_side=None, var_second_side=None, var_third_side=None):
-    area = "N/A"
-    perimeter = "N/A"
+    area = "Na"
+    perimeter = "Na"
 
     # if herons law can be used, calculate area and perimeter
     if var_first_side is not None and var_second_side is not None and var_third_side is not None:
         s = (var_first_side + var_second_side + var_third_side) / 2
-        area = f"{round(math.sqrt((s * (s - first_side) * (s - second_side) * (s - third_side))), 2)} SU"
-        perimeter = f"{round(var_first_side + var_second_side + var_third_side, 2)} U"
+        area = f"{round(math.sqrt((s * (s - var_first_side) * (s - var_second_side) * (s - var_third_side))), 2)}"
+        perimeter = f"{round(var_first_side + var_second_side + var_third_side, 2)}"
 
     # if base and height given, calculate area
     elif var_base is not None and var_height is not None:
-        area = f"{round(0.5 * var_base * var_height, 2)} SU"
+        area = f"{round(0.5 * var_base * var_height, 2)}"
 
     # returns area and perimeter
-    return (f"Area: {area}, "
-            f"Perimeter: {perimeter}")
+    return f"Area: {area} SU, Perimeter: {perimeter} U"
 
 
 # questions to ask for area of triangle
 def triangle_area_questions():
-    base = num_check("Base/Side 1: ")
-    height = num_check("Height: ")
-    return [base, height]
+    var_base = num_check("Base/Side 1: ")
+    var_height = num_check("Height: ")
+    return [var_base, var_height]
 
 
 # questions to ask for area and perimeter of triangle
@@ -105,6 +108,18 @@ def triangle_perimeter_questions():
 
 
 # Main Routine
+
+# Welcome Message
+print("***** Welcome to Area / Perimeter Calculator *****")
+print()
+
+# Get name to be reference while executing write to file making sure it's not blank
+while True:
+    user_program_name = input("File Name: ").lower()
+    if user_program_name:
+        break
+    else:
+        print("File name cannot be blank")
 
 # yes no list and fixed error message used thrice
 yes_no_list = ['yes', 'no']
@@ -125,7 +140,9 @@ number_of_calculations = num_check("Enter the number of calculations(<enter> for
                                    num_type=int, exit_code='')
 # let the user know they have entered infinite mode
 if number_of_calculations == "":
-    print("infinite mode")
+    print()
+    print("*** You have entered Infinite Mode ***")
+    print()
 
 # variable to track # of calculations done by the user
 calculations_done = 0
@@ -137,14 +154,22 @@ results_list = []
 
 # Main while loop to
 while number_of_calculations == "" or calculations_done < number_of_calculations:
+
+    # let user know what question they are on
+    if number_of_calculations != "":
+        print(f"Question {calculations_done + 1} of {number_of_calculations}")
+
     select_shape = choice_checker('Enter shape("xxx" to quit): ', shape_selection_list,
                                   'Please select circle, square, rectangle or triangle')
 
+    # if exit code is entered, exit from the program
     if select_shape == 'xxx' or select_shape == 'x':
         break
+    print()
+    print(f'-- You picked {select_shape} --')
+    print()
 
-    print(f'You picked {select_shape}')
-
+    # Decide which shape is selected
     if select_shape == "circle":
         radius = num_check("Radius: ", exit_code='na')
         given_information = f"Radius: {str(radius)}"
@@ -163,14 +188,20 @@ while number_of_calculations == "" or calculations_done < number_of_calculations
 
     elif select_shape == "triangle":
 
-        have_side_lengths = choice_checker("Do you have the lengths of the 3 sides",
+        # given information only changes if something is given
+
+        given_information = "-- No information given --"
+        results = "No results available"
+
+        have_side_lengths = choice_checker("Do you have the lengths of the 3 sides: ",
                                            yes_no_list, yes_no_error_message)
 
+        # if they have 3 sides, return the area and perimeter
         if have_side_lengths == "yes" or have_side_lengths == "y":
             given_information = triangle_perimeter_questions()
             first_side, second_side, third_side = given_information
             given_information = (f"Side 1: {str(first_side)},"
-                                 f"Side 2: {str(second_side)},Side 3: {str(third_side)}")
+                                 f"Side 2: {str(second_side)}, Side 3: {str(third_side)}")
 
             # Check for impossible Triangle
             if (first_side + second_side < third_side or first_side + third_side < second_side
@@ -178,41 +209,75 @@ while number_of_calculations == "" or calculations_done < number_of_calculations
                 print("Impossible Triangle")
                 continue
 
+            # Calculate area / perimeter
             results = triangle(None, None, first_side, second_side, third_side)
 
-
+            # ask questions for base and height if 3 sides isn't given
         else:
-            have_base_height = choice_checker("Do you have a base/side 1 and height? ",
-                                              yes_no_list, yes_no_error_message)
+            given_information = triangle_area_questions()
+            base, height = given_information
+            given_information = f"Base: {str(base)}, Height: {str(height)}"
+            results = triangle(base, height, None, None, None)
 
-            if have_base_height == "yes" or have_base_height == "y":
-                given_information = triangle_area_questions()
-                base, height = given_information
-                given_information = f"Base: {str(base)},Height: {str(height)}"
-                results = triangle(base, height, None, None, None)
+    # output results
+    print()
+    print("***** Results *****")
+    print(results)
+    print()
 
+    # Append shape, given information and results to the dataframe dictionary
     shapes_list.append(select_shape)
     given_information_list.append(given_information)
     results_list.append(results)
 
+    # increase calculations by 1
     calculations_done += 1
 
-# dictionary to gather all dataframe information
-results_dict = {
-    "Shape": shapes_list,
-    "Given Information": given_information_list,
-    "Results": results_list
+# only run if calculations done is more than 1
+if calculations_done >= 1:
 
-}
-print()
-results_heading = ("*********************** Results"
-                   " ***********************")
-frame = pandas.DataFrame(results_dict).set_index("Shape")
+    # dictionary to gather all dataframe information
+    results_dict = {
+        "Shape": shapes_list,
+        "Given Information": given_information_list,
+        "Area/Perimeter": results_list
 
-# Capitalize the first letter of each shape name in the "Shape" column
-frame.index = frame.index.str.title()
+    }
+    print()
 
-to_write = [results_heading, frame]
+    # Results Heading
+    results_heading = "*********************** Area & Perimeter Results ***********************\n"
 
-for item in to_write:
-    print(item)
+    # Units information
+    units_display = "Area is in Square units and Perimeter is in units\n"
+
+    frame = pandas.DataFrame(results_dict).set_index("Shape")
+
+    # Capitalize the first letter of each shape name in the "Shape" column
+    frame.index = frame.index.str.title()
+
+    # convert frame to string
+    frame = str(frame)
+
+    to_write = [results_heading, units_display, frame]
+
+    for item in to_write:
+        print(item)
+
+    # Write to file`
+    # create file to hold data (add .txt extension)
+    file_name = f"{user_program_name}.txt"
+    text_file = open(file_name, "w+")
+
+    # heading
+    for item in to_write:
+        text_file.write(item)
+        text_file.write("\n")
+
+    # close file
+    text_file.close()
+
+else:
+
+    # If user didn't do any calculations
+    print("You have quit this program")

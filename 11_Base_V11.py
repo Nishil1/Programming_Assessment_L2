@@ -1,14 +1,16 @@
 import math
-import pandas as pd
+import pandas
+
 
 # Function containing instructions
 def instructions():
-    print("Welcome to the Shape Area and Perimeter Calculator!\n "
+    print("Welcome to the Shape Area and Perimeter Calculator!\n\n"
+          
           "This program allows you to calculate the area and perimeter (or circumference) of various shapes\n"
           "including circles, squares, rectangles, and triangles. Simply follow the prompts to input the necessary\n"
-          "dimensions for your chosen shape, and the program will provide the calculated results. \n"
+          "dimensions for your chosen shape, and the program will provide the calculated results. \n\n"
           "You can perform multiple calculations in one session, and a summary of all your calculations will be \n"
-          "displayed at the end. Type 'xxx' at any prompt to exit the program.\n")
+          "displayed at the end. Type 'xxx' at any enter shape question to exit the program.\n")
 
 
 # choice checker to obtain valid responses from the user
@@ -107,6 +109,10 @@ def triangle_perimeter_questions():
 
 # Main Routine
 
+# Welcome Message
+print("***** Welcome to Area / Perimeter calculator *****")
+print()
+
 # Get name to be reference while executing write to file making sure it's not blank
 while True:
     user_program_name = input("File Name: ").lower()
@@ -134,7 +140,7 @@ number_of_calculations = num_check("Enter the number of calculations(<enter> for
                                    num_type=int, exit_code='')
 # let the user know they have entered infinite mode
 if number_of_calculations == "":
-    print("infinite mode")
+    print("You have entered Infinite Mode")
 
 # variable to track # of calculations done by the user
 calculations_done = 0
@@ -154,6 +160,8 @@ while number_of_calculations == "" or calculations_done < number_of_calculations
         break
 
     print(f'You picked {select_shape}')
+
+    # Decide which shape is selected
 
     if select_shape == "circle":
         radius = num_check("Radius: ", exit_code='na')
@@ -176,12 +184,15 @@ while number_of_calculations == "" or calculations_done < number_of_calculations
 
     elif select_shape == "triangle":
 
+        # given information only changes if something is given
+
         given_information = "-- No information given --"
         results = "No results available"
 
-        have_side_lengths = choice_checker("Do you have the lengths of the 3 sides",
+        have_side_lengths = choice_checker("Do you have the lengths of the 3 sides: ",
                                            yes_no_list, yes_no_error_message)
 
+        # if they have 3 sides, return the area and perimeter
         if have_side_lengths == "yes" or have_side_lengths == "y":
             given_information = triangle_perimeter_questions()
             first_side, second_side, third_side = given_information
@@ -194,22 +205,28 @@ while number_of_calculations == "" or calculations_done < number_of_calculations
                 print("Impossible Triangle")
                 continue
 
+            # Calculate area / perimeter
             results = triangle(None, None, first_side, second_side, third_side)
 
+            # ask questions for base and height if 3 sides isnt given
         else:
             given_information = triangle_area_questions()
             base, height = given_information
             given_information = f"Base: {str(base)}, Height: {str(height)}"
             results = triangle(base, height, None, None, None)
 
-        print(results)
+    # output results
+    print(results)
 
+    # Append shape, given information and results to the dataframe dictionary
     shapes_list.append(select_shape)
     given_information_list.append(given_information)
     results_list.append(results)
 
+    # increase calculations by 1
     calculations_done += 1
 
+# only run if calculations done is more than 1
 if calculations_done >= 1:
 
     # dictionary to gather all dataframe information
@@ -227,7 +244,7 @@ if calculations_done >= 1:
     # Units information
     units_display = "Area is in Square units and Perimeter is in units\n"
 
-    frame = pd.DataFrame(results_dict).set_index("Shape")
+    frame = pandas.DataFrame(results_dict).set_index("Shape")
 
     # Capitalize the first letter of each shape name in the "Shape" column
     frame.index = frame.index.str.title()
@@ -254,4 +271,6 @@ if calculations_done >= 1:
     text_file.close()
 
 else:
+
+    # If user didnt do any calculations
     print("You have quit this program")

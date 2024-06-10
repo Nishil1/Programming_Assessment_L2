@@ -17,12 +17,12 @@ def choice_checker(question, valid_responses, error_message):
         response = input(question).lower()
 
         # Iterating the items in valid responses
-        for item in valid_responses:
+        for var_item in valid_responses:
 
             # checking if the user input is valid
-            if response == item or response == item[0]:
+            if response == var_item or response == var_item[0]:
                 # returning if it is
-                return item
+                return var_item
         # output error if input is invalid
         print(error_message)
 
@@ -52,21 +52,21 @@ def num_check(question, num_type=float, exit_code=None):
                 # output error if 0 or less
                 print(error)
 
-        # error if input is not a integer / float as specified by parameter
+        # error if input is not an integer / float as specified by parameter
         except ValueError:
             print(error)
 
 
 # function to calculate area / circumference of circle
 def circle(var_radius):
-    return (f"Area: {round(3.14 * var_radius * var_radius, 2)} SU, "
-            f"Circumference: {round(2 * 3.14 * var_radius, 2)} U")
+    return (f"{round(3.14 * var_radius * var_radius, 2)} SU"
+            f"/{round(2 * 3.14 * var_radius, 2)} U")
 
 
-# function to calulate area / perimeter of squares and rectangles
-def square_rectangle(var_length, width):
-    return (f"Area: {round(var_length * width, 2)} SU, "
-            f"Perimeter: {round(2 * length + 2 * width, 2)} U")
+# function to calculate area / perimeter of squares and rectangles
+def square_rectangle(var_length, var_width):
+    return (f"{round(var_length * var_width, 2)} "
+            f"SU/{round(2 * length + 2 * var_width, 2)} U")
 
 
 # calculated area / perimeter using herons law or base and height
@@ -77,23 +77,22 @@ def triangle(var_base=None, var_height=None, var_first_side=None, var_second_sid
     # if herons law can be used, calculate area and perimeter
     if var_first_side is not None and var_second_side is not None and var_third_side is not None:
         s = (var_first_side + var_second_side + var_third_side) / 2
-        area = f"{round(math.sqrt((s * (s - first_side) * (s - second_side) * (s - third_side))), 2)} SU"
-        perimeter = f"{round(var_first_side + var_second_side + var_third_side, 2)} U"
+        area = f"{round(math.sqrt((s * (s - first_side) * (s - second_side) * (s - third_side))), 2)}"
+        perimeter = f"{round(var_first_side + var_second_side + var_third_side, 2)}"
 
     # if base and height given, calculate area
     elif var_base is not None and var_height is not None:
         area = f"{round(0.5 * var_base * var_height, 2)} SU"
 
     # returns area and perimeter
-    return (f"Area: {area}, "
-            f"Perimeter: {perimeter}")
+    return f"{area} SU/{perimeter} U"
 
 
 # questions to ask for area of triangle
 def triangle_area_questions():
-    base = num_check("Base/Side 1: ")
-    height = num_check("Height: ")
-    return [base, height]
+    var_base = num_check("Base/Side 1: ")
+    var_height = num_check("Height: ")
+    return [var_base, var_height]
 
 
 # questions to ask for area and perimeter of triangle
@@ -105,6 +104,9 @@ def triangle_perimeter_questions():
 
 
 # Main Routine
+
+# Get name to be reference while executing write to file
+user_program_name = input("File Name: ")
 
 # yes no list and fixed error message used thrice
 yes_no_list = ['yes', 'no']
@@ -163,6 +165,9 @@ while number_of_calculations == "" or calculations_done < number_of_calculations
 
     elif select_shape == "triangle":
 
+        given_information = "-- No information given --"
+        results = "No results available"
+
         have_side_lengths = choice_checker("Do you have the lengths of the 3 sides",
                                            yes_no_list, yes_no_error_message)
 
@@ -180,7 +185,6 @@ while number_of_calculations == "" or calculations_done < number_of_calculations
 
             results = triangle(None, None, first_side, second_side, third_side)
 
-
         else:
             have_base_height = choice_checker("Do you have a base/side 1 and height? ",
                                               yes_no_list, yes_no_error_message)
@@ -197,22 +201,46 @@ while number_of_calculations == "" or calculations_done < number_of_calculations
 
     calculations_done += 1
 
-# dictionary to gather all dataframe information
-results_dict = {
-    "Shape": shapes_list,
-    "Given Information": given_information_list,
-    "Results": results_list
+if calculations_done >= 1:
 
-}
-print()
-results_heading = ("*********************** Results"
-                   " ***********************")
-frame = pandas.DataFrame(results_dict).set_index("Shape")
+    # dictionary to gather all dataframe information
+    results_dict = {
+        "Shape": shapes_list,
+        "Given Information": given_information_list,
+        "Area/Perimeter": results_list
 
-# Capitalize the first letter of each shape name in the "Shape" column
-frame.index = frame.index.str.title()
+    }
+    print()
 
-to_write = [results_heading, frame]
+    # Results Heading
+    results_heading = ("*********************** Area & Perimeter Results"
+                       " ***********************\n")
 
-for item in to_write:
-    print(item)
+    frame = pandas.DataFrame(results_dict).set_index("Shape")
+
+    # Capitalize the first letter of each shape name in the "Shape" column
+    frame.index = frame.index.str.title()
+
+    # convert frame to string
+    frame = str(frame)
+
+    to_write = [results_heading, frame]
+
+    for item in to_write:
+        print(item)
+
+    # Write to file`
+    # create file to hold data (add .txt extension)
+    file_name = f"{user_program_name}.txt"
+    text_file = open(file_name, "w+")
+
+    # heading
+    for item in to_write:
+        text_file.write(item)
+        text_file.write("\n")
+
+    # close file
+    text_file.close()
+
+else:
+    print("You have quit this program")
