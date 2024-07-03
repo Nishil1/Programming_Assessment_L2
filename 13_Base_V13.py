@@ -1,5 +1,6 @@
 import math
 import pandas
+import re
 
 
 # Function containing instructions
@@ -28,7 +29,7 @@ def choice_checker(question, valid_responses, error_message):
     while True:
         response = input(question).lower()
 
-        # Iterating the items in valid responses
+        # Iterating through items in valid responses
         for var_item in valid_responses:
 
             # checking if the user input is valid
@@ -71,8 +72,8 @@ def num_check(question, num_type=float, exit_code=None):
 
 # function to calculate area / circumference of circle
 def circle(var_radius):
-    area = round(3.14 * var_radius * var_radius, 2)
-    perimeter = round(2 * 3.14 * var_radius, 2)
+    area = round(math.pi * var_radius * var_radius, 2)
+    perimeter = round(2 * math.pi * var_radius, 2)
     return f"| Area: {area} SU, Perimeter: {perimeter} U"
 
 
@@ -84,37 +85,21 @@ def square_rectangle(var_length, var_width):
 
 
 # calculated area / perimeter using herons law or base and height
-def triangle(var_base=None, var_height=None, var_first_side=None, var_second_side=None, var_third_side=None):
-
+def triangle(base=None, height=None, first_side=None, second_side=None, third_side=None):
     perimeter = "N/A"
 
     # if herons law can be used, calculate area and perimeter
-    if var_first_side is not None and var_second_side is not None and var_third_side is not None:
-        s = (var_first_side + var_second_side + var_third_side) / 2
-        area = f"{round(math.sqrt((s * (s - var_first_side) * (s - var_second_side) * (s - var_third_side))), 2)}"
-        perimeter = f"{round(var_first_side + var_second_side + var_third_side, 2)}"
+    if first_side is not None and second_side is not None and third_side is not None:
+        s = (first_side + second_side + third_side) / 2
+        area = f"{round(math.sqrt((s * (s - first_side) * (s - second_side) * (s - third_side))), 2)}"
+        perimeter = f"{round(first_side + second_side + third_side, 2)}"
 
     # if base and height given, calculate area
-    elif var_base is not None and var_height is not None:
-        area = f"{round(0.5 * var_base * var_height, 2)}"
+    elif base is not None and height is not None:
+        area = f"{round(0.5 * base * height, 2)}"
 
     # returns area and perimeter
-    return f"| Area: {area} SU, Perimeter: {perimeter} U"
-
-
-# questions to ask for area of triangle
-def triangle_area_questions():
-    var_base = num_check("Base/Side 1: ")
-    var_height = num_check("Height: ")
-    return [var_base, var_height]
-
-
-# questions to ask for area and perimeter of triangle
-def triangle_perimeter_questions():
-    var_first_side = num_check("Side 1/Base: ")
-    var_second_side = num_check("Side 2: ")
-    var_third_side = num_check("Side 3: ")
-    return var_first_side, var_second_side, var_third_side
+    return f"| Area: {area} SU, Perimeter: {perimeter}{' U' if perimeter != 'N/A' else ''}"
 
 
 # Main Routine
@@ -123,15 +108,20 @@ def triangle_perimeter_questions():
 print("***** Welcome to Area / Perimeter Calculator *****")
 print()
 
+# Invalid characters for file name
+invalid_characters = re.compile(r'[^A-Za-z0-9_]')
+
 # Get name to be reference while executing write to file making sure it's not blank
+# and has appropriate characters(only letters, numbers and underscores of max 50 character length)
 while True:
     user_program_name = input("File Name: ").lower()
-    if user_program_name:
-        break
+    if user_program_name.strip() == "" or len(user_program_name) > 50 or invalid_characters.search(user_program_name):
+        print("File name cannot be blank, greater than 50 characters and cannot include "
+              "anything other than letters, numbers and underscores(No spaces)")
     else:
-        print("File name cannot be blank")
+        break
 
-# yes no list and fixed error message used thrice
+# yes no list and fixed error message
 yes_no_list = ['yes', 'no']
 yes_no_error_message = "Please enter yes or no"
 
@@ -148,6 +138,7 @@ if show_instructions == "yes":
 # Obtain number of calculations user needs or infinite mode
 number_of_calculations = num_check("Enter the number of calculations(<enter> for infinite mode): ",
                                    num_type=int, exit_code='')
+
 # let the user know they have entered infinite mode
 if number_of_calculations == "":
     print()
@@ -157,7 +148,7 @@ if number_of_calculations == "":
 # variable to track # of calculations done by the user
 calculations_done = 0
 
-# Set up lists
+# Set up lists for dataframe outputting
 shapes_list = []
 given_information_list = []
 results_list = []
@@ -167,9 +158,12 @@ while number_of_calculations == "" or calculations_done < number_of_calculations
 
     # let user know what question they are on
     if number_of_calculations != "":
-        print(f"Question {calculations_done + 1} of {number_of_calculations}")
+        # as calculations done only get added as the loop is finished, it will be 1 behind
+        # so need to increase it by 1
+        print()
+        print(f"***** Question {calculations_done + 1} of {number_of_calculations} *****")
 
-    select_shape = choice_checker('Enter shape("xxx" to quit): ', shape_selection_list,
+    select_shape = choice_checker('Enter Shape("xxx" to quit): ', shape_selection_list,
                                   'Please select circle, square, rectangle or triangle')
 
     # if exit code is entered, exit from the program
@@ -190,18 +184,18 @@ while number_of_calculations == "" or calculations_done < number_of_calculations
     given_information = ""
 
     if select_shape == "circle":
-        radius = num_check("Radius: ", exit_code='na')
+        radius = num_check("Radius: ")
         given_information = f"Radius: {str(radius)}"
         results = circle(radius)
 
     elif select_shape == "square":
-        length = num_check("Length: ", exit_code='na')
+        length = num_check("Length: ")
         given_information = f"Length: {length}"
         results = square_rectangle(length, length)
 
     elif select_shape == "rectangle":
-        length = num_check("Length: ", exit_code='na')
-        width = num_check("Width: ", exit_code='na')
+        length = num_check("Length: ")
+        width = num_check("Width: ")
         given_information = f"Length: {str(length)}, Width: {str(width)}"
         results = square_rectangle(length, width)
 
@@ -218,26 +212,27 @@ while number_of_calculations == "" or calculations_done < number_of_calculations
 
         # if they have 3 sides, return the area and perimeter
         if have_side_lengths == "yes" or have_side_lengths == "y":
-            given_information = triangle_perimeter_questions()
-            first_side, second_side, third_side = given_information
-            given_information = (f"Side 1: {first_side},"
-                                 f"Side 2: {second_side}, Side 3: {third_side}")
+            var_first_side = num_check("Side 1/Base: ")
+            var_second_side = num_check("Side 2: ")
+            var_third_side = num_check("Side 3: ")
+            given_information = (f"Side 1: {var_first_side},"
+                                 f"Side 2: {var_second_side}, Side 3: {var_third_side}")
 
             # Check for impossible Triangle
-            if (first_side + second_side < third_side or first_side + third_side < second_side
-                    or second_side + third_side < first_side):
+            if (var_first_side + var_second_side < var_third_side or var_first_side + var_third_side < var_second_side
+                    or var_second_side + var_third_side < var_first_side):
                 print("Impossible Triangle")
                 continue
 
             # Calculate area / perimeter
-            results = triangle(None, None, first_side, second_side, third_side)
+            results = triangle(None, None, var_first_side, var_second_side, var_third_side)
 
             # ask questions for base and height if 3 sides isn't given
         else:
-            given_information = triangle_area_questions()
-            base, height = given_information
-            given_information = f"Base: {str(base)}, Height: {str(height)}"
-            results = triangle(base, height, None, None, None)
+            var_base = num_check("Base/Side 1: ")
+            var_height = num_check("Height: ")
+            given_information = f"Base: {var_base}, Height: {var_height}"
+            results = triangle(var_base, var_height, None, None, None)
 
     # output results
     print()
@@ -301,7 +296,7 @@ else:
 
     # If user didn't do any calculations
     print()
-    print("You haven't done any calculations")
+    print("Nothing to display")
 
 # Thank the user for using the program
 print()
